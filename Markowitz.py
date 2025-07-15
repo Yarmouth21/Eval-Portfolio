@@ -30,11 +30,19 @@ def rentabilite_attendue_portefeuille(titres, repart):
     cov = rendement.cov()
     print (f"Covariance mensuelle:\n{cov*100}")
 
-    variance = rendement.var()
-    print(f"Variance mensuelle:\n{variance*100}")
+    w= np.array(repart) / 100
+    variance_portefeuille = np.dot(w.T, np.dot(cov,w))
+    print (variance_portefeuille)
+    ecart_type_portefeuille = np.sqrt(variance_portefeuille)
+    print(f"Ecart-type mensuel du portefeuille: {ecart_type_portefeuille:.2%}")
+    ecart_type_annuel = ecart_type_portefeuille * np.sqrt(12)
+    print(f"Ecart-type annuel du portefeuille: {ecart_type_annuel:.2%}")
+
+    sharpe = (rendement_annuel - 0.024) / ecart_type_annuel
+    print(f"Ratio de Sharpe: {sharpe:.2f}")
 
 
 titres=['CAT', 'DSY.PA', 'RACE', 'NAK', '1WE.F','NKE','MCHA.F','PAH3.DE']
-repart=[22.1,21.43,21.38,15.1,12.9,0.05,0.02,0.0015]
+repart=[22.1,21.43,21.38,15.1,12.9,5,2,0.1]
 
 rentabilite_attendue_portefeuille(titres, repart)
