@@ -20,6 +20,7 @@ def rentabilite_attendue_portefeuille(titres, repart):
         prix = recuperation(titre, "2022-07-01", "2025-07-01", "1mo")['Adj Close']
         rendement[titre] = prix.pct_change().fillna(0)
 
+    rend = rendement.sum(axis=1)
     rendement_mensuel = rendement.mean() 
     rendement_pondere = rendement_mensuel * repart / 100
     rendement_pondere = rendement_pondere.sum()
@@ -40,6 +41,15 @@ def rentabilite_attendue_portefeuille(titres, repart):
 
     sharpe = (rendement_annuel - 0.024) / ecart_type_annuel
     print(f"Ratio de Sharpe: {sharpe:.2f}")
+
+    sp = yf.download('^GSPC', start="2022-07-01", end="2025-07-01", interval="1mo")['Close']
+    sp_rendement = sp.pct_change().fillna(0)
+
+    beta = rend.cov(sp_rendement.iloc[:,0]) / sp_rendement.iloc[:,0].var()
+    print(f"Beta des titres par rapport au S&P500:\n{beta}")
+
+    rendement_attendu = 0.032 + beta * (rendement_annuel - 0.032)
+    print(f"Rentabilité attendue des titres:\n{rendement_attendu}")
 
 
 titres=['CAT', 'DSY.PA', 'RACE', 'NAK', '1WE.F','NKE','MCHA.F','PAH3.DE']
