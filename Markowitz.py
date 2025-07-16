@@ -44,12 +44,15 @@ def rentabilite_attendue_portefeuille(titres, repart):
 
     sp = yf.download('^GSPC', start="2022-07-01", end="2025-07-01", interval="1mo")['Close']
     sp_rendement = sp.pct_change().fillna(0)
+    sp_rend = sp_rendement.mean()
+    sp_rend = (sp_rend + 1) ** 12 - 1
+    print(f"Rentabilité annuelle du S&P500: {sp_rend.iloc[0]:.2%}")
 
     beta = rend.cov(sp_rendement.iloc[:,0]) / sp_rendement.iloc[:,0].var()
     print(f"Beta des titres par rapport au S&P500:\n{beta}")
 
-    rendement_attendu = 0.032 + beta * (rendement_annuel - 0.032)
-    print(f"Rentabilité attendue des titres:\n{rendement_attendu}")
+    rendement_attendu = 0.024 + beta * (sp_rend - 0.024)
+    print(f"Rentabilité attendue des titres:\n{rendement_attendu.iloc[0]:.2%}")
 
 
 titres=['CAT', 'DSY.PA', 'RACE', 'NAK', '1WE.F','NKE','MCHA.F','PAH3.DE']
